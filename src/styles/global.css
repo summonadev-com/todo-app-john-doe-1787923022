@@ -1,1 +1,28 @@
 @import "tailwindcss";
+
+@theme {
+  /* Single accent: indigo. red = overdue only. amber = due soon only. */
+  --color-accent: var(--color-indigo-600);
+  --color-accent-hover: var(--color-indigo-700);
+  --color-accent-soft: var(--color-indigo-50);
+  --color-accent-ring: var(--color-indigo-500);
+
+  --color-overdue: var(--color-red-500);
+  --color-overdue-soft: var(--color-red-50);
+  --color-overdue-text: var(--color-red-700);
+
+  --color-duesoon: var(--color-amber-500);
+  --color-duesoon-soft: var(--color-amber-50);
+  --color-duesoon-text: var(--color-amber-700);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Consistent, always-visible focus treatment for keyboard users. */
+:focus-visible {
+  outline: 2px solid var(--color-accent-ring);
+  outline-offset: 2px;
+  border-radius: 0.375rem;
+}
