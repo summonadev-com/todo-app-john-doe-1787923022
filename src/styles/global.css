@@ -26,3 +26,15 @@ html {
   outline-offset: 2px;
   border-radius: 0.375rem;
 }
+
+/* Exception: the quick-add bar is the single focused element visually — its form
+   wrapper draws the accent ring via focus-within. This rule is unlayered like the
+   one above (Tailwind utilities live in @layer utilities and therefore lose to it),
+   so the input's own outline must be cancelled here rather than with a
+   `focus:outline-none` class, which would otherwise be overridden and produce a
+   double border. Scoped to #quick-add so every other input keeps its own focus ring. */
+#quick-add:focus,
+#quick-add:focus-visible {
+  outline: none;
+  box-shadow: none;
+}

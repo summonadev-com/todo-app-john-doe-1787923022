@@ -64,6 +64,12 @@ export function QuickAdd({ onAdd, onMoreOptions, now }: QuickAddProps) {
         <span aria-hidden="true" className="pl-2.5 text-lg leading-none text-slate-400">
           +
         </span>
+        {/*
+          Deliberately borderless: the form wrapper owns the focus ring
+          (focus-within) so only ONE focus indicator is ever visible. The outline
+          reset also lives in global.css under #quick-add, because the global
+          :focus-visible rule is unlayered and beats Tailwind utilities.
+        */}
         <input
           id="quick-add"
           ref={inputRef}
@@ -74,7 +80,7 @@ export function QuickAdd({ onAdd, onMoreOptions, now }: QuickAddProps) {
           onKeyDown={onKeyDown}
           placeholder="Add a task — try “Pay rent tomorrow 09:00”"
           aria-describedby="quick-add-hint"
-          className="min-h-11 min-w-0 flex-1 bg-transparent px-1 text-[15px] text-slate-900 placeholder:text-slate-400 focus:outline-none"
+          className="min-h-11 min-w-0 flex-1 border-0 bg-transparent px-1 text-[15px] text-slate-900 shadow-none outline-none placeholder:text-slate-400 focus:border-0 focus:shadow-none focus:outline-none"
         />
         <button
           type="button"
