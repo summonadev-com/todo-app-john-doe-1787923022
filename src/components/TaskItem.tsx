@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { formatDueLabel, isDueSoon, isOverdue } from '@/lib/date';
 import type { Task } from '@/types/task';
 
@@ -10,8 +11,29 @@ type TaskItemProps = {
 };
 
 export function TaskItem({ task, now, onToggle, onEdit, onDelete }: TaskItemProps) {
-  const overdue = isOverdue(task, now);
-  const dueSoon = !overdue && isDueSoon(task, now);
+  // Show the new checked state immediately, then commit shortly after so the
+  // strike-through/fade is visible before the row leaves its section.
+  const [pending, setPending] = useState<boolean | null>(null);
+  const timer = useRef<number | null>(null);
+
+  useEffect(() => {
+    setPending(null);
+  }, [task.completed]);
+
+  useEffect(() => () => {
+    if (timer.current !== null) window.clearTimeout(timer.current);
+  }, []);
+
+  function handleToggle() {
+    const next = !task.completed;
+    setPending(next);
+    if (timer.current !== null) window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => onToggle(task.id), 220);
+  }
+
+  const checked = pending ?? task.completed;
+  const overdue = !checked && isOverdue(task, now);
+  const dueSoon = !overdue && !checked && isDueSoon(task, now);
   const dueLabel = formatDueLabel(task, now);
 
   const accent = overdue
@@ -25,15 +47,15 @@ export function TaskItem({ task, now, onToggle, onEdit, onDelete }: TaskItemProp
       className={[
         'group flex items-start gap-3 border-l-2 px-3 py-3 transition-colors motion-reduce:transition-none',
         accent,
-        task.completed ? 'opacity-60' : '',
+        checked ? 'opacity-60' : '',
       ].join(' ')}
     >
       <input
         type="checkbox"
         id={`task-${task.id}`}
-        checked={task.completed}
-        onChange={() => onToggle(task.id)}
-        aria-label={task.completed ? `Mark “${task.title}” as not done` : `Mark “${task.title}” as done`}
+        checked={checked}
+        onChange={handleToggle}
+        aria-label={checked ? `Mark “${task.title}” as not done` : `Mark “${task.title}” as done`}
         className="mt-0.5 size-5 shrink-0 cursor-pointer rounded border-slate-300 text-accent accent-indigo-600"
       />
 
@@ -47,7 +69,7 @@ export function TaskItem({ task, now, onToggle, onEdit, onDelete }: TaskItemProp
           <span
             className={[
               'text-[15px] leading-snug transition-colors motion-reduce:transition-none',
-              task.completed
+              checked
                 ? 'text-slate-500 line-through decoration-slate-400'
                 : 'text-slate-900 group-hover:text-accent',
             ].join(' ')}
